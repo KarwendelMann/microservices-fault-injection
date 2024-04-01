@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: logging
+  labels:
+    k8s-app: filebeat
+data:
+  filebeat.yml: |
+    filebeat.inputs:
+      - type: log
+        paths:
+          - /var/lib/docker/containers/*/*.log
+        json.message_key: log
+        json.keys_under_root: true
+        json.add_error_key: true
+        containers.ids:
+          - "*"
+    output.elasticsearch:
+      hosts: [ "elasticsearch.logging:9200" ]

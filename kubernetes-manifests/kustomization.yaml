@@ -33,6 +33,15 @@ resources:
   - prometheus-serviceaccount.yaml
   - prometheus-clusterrole.yaml
   - prometheus-clusterrolebinding.yaml
+  - elasticsearch-deployment.yaml
+  - elasticsearch-service.yaml
+  - kibana-deployment.yaml
+  - kibana-service.yaml
+  - filebeat-configmap.yaml
+  - filebeat-daemonset.yaml
+  - filebeat-serviceaccount.yaml
+  - filebeat-clusterrole.yaml
+  - filebeat-clusterrolebinding.yaml
 # components:
 # - ../kustomize/components/cymbal-branding
 # - ../kustomize/components/google-cloud-operations
