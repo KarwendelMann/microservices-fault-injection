@@ -7,14 +7,97 @@ metadata:
     k8s-app: filebeat
 data:
   filebeat.yml: |
-    filebeat.inputs:
-      - type: log
-        paths:
-          - /var/lib/docker/containers/*/*.log
-        json.message_key: log
-        json.keys_under_root: true
-        json.add_error_key: true
-        containers.ids:
-          - "*"
+    filebeat.autodiscover:
+      providers:
+        - type: kubernetes
+          node: ${NODE_NAME}
+          templates:
+            - condition:
+                contains:
+                  kubernetes.labels.app: "adservice"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "checkoutservice"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "productcatalogservice"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "paymentservice"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "recommendationservice"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "redis-cart"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "shippingservice"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "emailservice"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "currencyservice"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "cartservice"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "frontend"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
+                  kubernetes.labels.app: "loadgenerator"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+    processors:
+      - add_kubernetes_metadata:
+          in_cluster: true
     output.elasticsearch:
       hosts: [ "elasticsearch.logging:9200" ]
