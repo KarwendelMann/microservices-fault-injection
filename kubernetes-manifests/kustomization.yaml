@@ -27,12 +27,6 @@ resources:
   - recommendationservice.yaml
   - redis.yaml
   - shippingservice.yaml
-  - prometheus-configmap.yaml
-  - prometheus-deployment.yaml
-  - prometheus-service.yaml
-  - prometheus-serviceaccount.yaml
-  - prometheus-clusterrole.yaml
-  - prometheus-clusterrolebinding.yaml
   - elasticsearch-deployment.yaml
   - elasticsearch-service.yaml
   - kibana-deployment.yaml
@@ -42,6 +36,12 @@ resources:
   - filebeat-serviceaccount.yaml
   - filebeat-clusterrole.yaml
   - filebeat-clusterrolebinding.yaml
+  - metricbeat-clusterrole.yaml
+  - metricbeat-configmap.yaml
+  - metricbeat-daemonset.yaml
+  - metricbeat-serviceaccount.yaml
+  - metricbeat-clusterrolebinding.yaml
+  - metricbeat-modules-configmap.yaml
 # components:
 # - ../kustomize/components/cymbal-branding
 # - ../kustomize/components/google-cloud-operations

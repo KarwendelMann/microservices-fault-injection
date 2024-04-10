@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: metricbeat-config
+  namespace: logging
+data:
+  metricbeat.yml: |
+    metricbeat.config.modules:
+      path: ${path.config}/modules.d/*.yml
+      reload.enabled: false
+    setup.template.settings:
+      index.number_of_shards: 1
+      index.codec: best_compression
+    metricbeat.autodiscover:
+      providers:
+      - type: kubernetes
+        scope: cluster
+        node: ${NODE_NAME}
+        hints.enabled: false
+        namespace: "default"
+        templates:
+          - condition:
+              equals:
+                kubernetes.namespace: "default"
+          - config:
+              - module: prometheus
+                period: 10s
+                hosts: ["https://${NODE_NAME}:10250"]
+                metrics_path: /metrics/cadvisor
+                bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+                ssl.certificate_authorities:
+                  - /var/run/secrets/kubernetes.io/serviceaccount/ca.c
+
+    output.elasticsearch:
+      hosts: [ "elasticsearch.logging:9200" ]
