@@ -42,6 +42,7 @@ resources:
   - metricbeat-serviceaccount.yaml
   - metricbeat-clusterrolebinding.yaml
   - metricbeat-modules-configmap.yaml
+  - jaeger.yaml
 # components:
 # - ../kustomize/components/cymbal-branding
 # - ../kustomize/components/google-cloud-operations

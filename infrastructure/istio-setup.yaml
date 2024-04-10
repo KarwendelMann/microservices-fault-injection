@@ -1,26 +1,10 @@
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
-  profile: default
+  profile: demo
   meshConfig:
     enableTracing: true
     defaultConfig:
       tracing:
         zipkin:
-          address: jaeger-collector.istio-system.svc.cluster.local:9411
-    extensionProviders:
-      - name: "jaeger"
-        zipkin:
-          service: jaeger-collector.istio-system.svc.cluster.local
-          port: 9411
-          maxTagLength: 56
-  components:
-    pilot:
-      k8s:
-        overlays:
-          - apiVersion: apps/v1
-            kind: Deployment
-            name: istiod
-            patches:
-              - path: spec.template.spec.containers.[name:discovery].args.[30]
-                value: "--traceSampling=100"
+          address: jaeger.istio-system.svc.cluster.local:9411
