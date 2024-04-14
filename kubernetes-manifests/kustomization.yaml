@@ -43,6 +43,7 @@ resources:
   - metricbeat-clusterrolebinding.yaml
   - metricbeat-modules-configmap.yaml
   - jaeger.yaml
+  - fault-injector.yaml
 # components:
 # - ../kustomize/components/cymbal-branding
 # - ../kustomize/components/google-cloud-operations

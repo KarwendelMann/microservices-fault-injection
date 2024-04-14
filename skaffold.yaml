@@ -44,6 +44,8 @@ build:
     context: src/frontend
   - image: adservice
     context: src/adservice
+  - image: faultinjector
+    context: src/faultinjector
   tagPolicy:
     gitCommit: {}
   local:
