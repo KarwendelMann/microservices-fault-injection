@@ -91,6 +91,13 @@ data:
                     - /var/log/containers/*-${data.kubernetes.container.id}.log
             - condition:
                 contains:
+                  kubernetes.labels.app: "loadgenerator"
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*-${data.kubernetes.container.id}.log
+            - condition:
+                contains:
                   kubernetes.labels.app: "fault-injector-service"
               config:
                 - type: container

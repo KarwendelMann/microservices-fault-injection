@@ -1,23 +1,13 @@
-#!/usr/bin/python
-#
-# Copyright 2018 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+from locust import HttpUser, TaskSet, between, events
+from flask import Flask, request, jsonify
+import threading
+from locust.env import Environment
+from locust.stats import stats_printer, stats_history
 import random
-from locust import HttpUser, TaskSet, between
 from faker import Faker
 import datetime
+
+app = Flask(__name__)
 fake = Faker()
 
 products = [
@@ -37,7 +27,7 @@ def index(l):
 def setCurrency(l):
     currencies = ['EUR', 'USD', 'JPY', 'CAD', 'GBP', 'TRY']
     l.client.post("/setCurrency",
-        {'currency_code': random.choice(currencies)})
+                  {'currency_code': random.choice(currencies)})
 
 def browseProduct(l):
     l.client.get("/product/" + random.choice(products))
@@ -51,7 +41,7 @@ def addToCart(l):
     l.client.post("/cart", {
         'product_id': product,
         'quantity': random.randint(1,10)})
-    
+
 def empty_cart(l):
     l.client.post('/cart/empty')
 
@@ -70,10 +60,9 @@ def checkout(l):
         'credit_card_expiration_year': random.randint(current_year, current_year + 70),
         'credit_card_cvv': f"{random.randint(100, 999)}",
     })
-    
-def logout(l):
-    l.client.get('/logout')  
 
+def logout(l):
+    l.client.get('/logout')
 
 class UserBehavior(TaskSet):
 
@@ -90,3 +79,27 @@ class UserBehavior(TaskSet):
 class WebsiteUser(HttpUser):
     tasks = [UserBehavior]
     wait_time = between(1, 10)
+    host = "http://frontend:80"
+
+env = Environment(user_classes=[WebsiteUser])
+def init_locust():
+    env.create_local_runner()
+    env.runner.start(user_count=10, spawn_rate=10)
+
+@app.route('/control', methods=['POST'])
+def control_locust():
+    data = request.json
+    command = data.get('command')
+    if command == 'stop':
+        env.runner.stop()
+        return "Test stopped", 200
+    elif command == 'start':
+        user_count = data.get('user_count', 1)
+        spawn_rate = data.get('spawn_rate', 10)
+        env.runner.start(user_count=user_count, spawn_rate=spawn_rate)
+        return f"Changed to {user_count} users at spawn rate of {spawn_rate}", 200
+    return "Invalid command", 400
+
+if __name__ == "__main__":
+    init_locust()
+    threading.Thread(target=app.run(port=8089, use_reloader=False)).start()

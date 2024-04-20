@@ -21,10 +21,10 @@ data:
         templates:
           - condition:
               equals:
-                kubernetes.namespace: "default"
+                prometheus.labels.namespace: "default"
           - config:
               - module: prometheus
-                period: 10s
+                period: 5s
                 hosts: ["https://${NODE_NAME}:10250"]
                 metrics_path: /metrics/cadvisor
                 bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token

@@ -6,9 +6,9 @@ metadata:
   labels:
     k8s-app: metricbeat
 data:
-  kubernetes.yml: |-
+  prometheus.yml: |-
     - module: prometheus
-      period: 10s
+      period: 5s
       hosts: ["https://${NODE_NAME}:10250"]
       metrics_path: /metrics/cadvisor
       bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
