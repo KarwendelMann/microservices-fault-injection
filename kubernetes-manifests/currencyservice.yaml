@@ -52,6 +52,8 @@ spec:
           value: "7000"
         - name: DISABLE_PROFILER
           value: "1"
+        - name: TZ
+          value: "Europe/Berlin"
         readinessProbe:
           grpc:
             port: 7000

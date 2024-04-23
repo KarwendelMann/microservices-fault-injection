@@ -29,7 +29,7 @@ data:
                 metrics_path: /metrics/cadvisor
                 bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
                 ssl.certificate_authorities:
-                  - /var/run/secrets/kubernetes.io/serviceaccount/ca.c
+                  - /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 
     output.elasticsearch:
       hosts: [ "elasticsearch.logging:9200" ]

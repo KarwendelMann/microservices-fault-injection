@@ -50,6 +50,8 @@ spec:
           value: "50051"
         - name: DISABLE_PROFILER
           value: "1"
+        - name: TZ
+          value: "Europe/Berlin"
         readinessProbe:
           periodSeconds: 5
           grpc:
