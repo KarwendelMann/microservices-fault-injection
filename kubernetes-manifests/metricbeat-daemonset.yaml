@@ -48,9 +48,6 @@ spec:
             - name: cgroup
               mountPath: /host/sys/fs/cgroup
               readOnly: true
-            - name: modules
-              mountPath: /usr/share/metricbeat/modules.d
-              readOnly: true
       volumes:
         - name: config
           configMap:
@@ -65,7 +62,3 @@ spec:
         - name: dockersock
           hostPath:
             path: /var/run/docker.sock
-        - name: modules
-          configMap:
-            defaultMode: 0600
-            name: metricbeat-modules-config

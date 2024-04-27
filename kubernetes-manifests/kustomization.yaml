@@ -41,7 +41,6 @@ resources:
   - metricbeat-daemonset.yaml
   - metricbeat-serviceaccount.yaml
   - metricbeat-clusterrolebinding.yaml
-  - metricbeat-modules-configmap.yaml
   - jaeger.yaml
   - fault-injector.yaml
 # components:
