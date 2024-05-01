@@ -46,6 +46,8 @@ build:
     context: src/adservice
   - image: faultinjector
     context: src/faultinjector
+    docker:
+      dockerfile: Dockerfile
   tagPolicy:
     gitCommit: {}
   local:
@@ -54,6 +56,18 @@ manifests:
   kustomize:
     paths:
     - kubernetes-manifests
+portForward:
+  - resourceType: service
+    resourceName: fault-injector-service
+    namespace: fault-injection
+    port: 5005
+    localPort: 5005
+  - resourceType: service
+    resourceName: fault-injector-service
+    namespace: fault-injection
+    port: 8080
+    localPort: 8080
+
 deploy:
   kubectl: {}
 # "gcb" profile allows building and pushing the images

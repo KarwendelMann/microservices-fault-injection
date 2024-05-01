@@ -18,6 +18,9 @@ spec:
           image: faultinjector
           ports:
             - containerPort: 8080
+              name: server
+            - containerPort: 5005
+              name: debug
 
 ---
 
@@ -29,7 +32,11 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 80
+    - port: 8080
       targetPort: 8080
+      name: server
+    - port: 5005
+      targetPort: 5005
+      name: debug
   selector:
     app: fault-injector-service

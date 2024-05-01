@@ -29,6 +29,8 @@ spec:
               value: http://elasticsearch.logging:9200
             - name: COLLECTOR_ZIPKIN_HOST_PORT
               value: "9411"
+            - name: TZ
+              value: "Europe/Berlin"
 ---
 apiVersion: v1
 kind: Service

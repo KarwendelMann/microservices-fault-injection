@@ -30,6 +30,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: TZ
+              value: "Europe/Berlin"
           securityContext:
             runAsUser: 0
           resources:

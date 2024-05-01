@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/faults")
-class FaultActivationController(
+internal class FaultActivationController(
     private val faultActivationService: FaultActivationService
 ) {
     @PostMapping("/activate/{faultId}")
