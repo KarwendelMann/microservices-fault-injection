@@ -28,7 +28,7 @@ internal class ElasticsearchServiceImpl(
             val indices = listOf(FILEBEAT_INDEX_PATTERN, METRICBEAT_INDEX_PATTERN, JAEGER_INDEX_PATTERN)
 
             indices.forEach { index ->
-                val groupedByPod = searchIndex(index, timestamp)
+                val grouped = searchIndex(index, timestamp)
                     .let { results ->
                         when (index) {
                             FILEBEAT_INDEX_PATTERN -> groupByKubernetesApp(results)
@@ -38,7 +38,7 @@ internal class ElasticsearchServiceImpl(
                         }
                     }
 
-                groupedByPod.forEach { (podName, dataPoints) ->
+                grouped.forEach { (podName, dataPoints) ->
                     val fileName = "${index.filter { it.isLetterOrDigit() }}/$podName.json"
                     zipOutputStream.putNextEntry(ZipEntry(fileName))
                     dataPoints.forEach { dataPoint ->

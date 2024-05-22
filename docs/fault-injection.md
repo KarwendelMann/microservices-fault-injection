@@ -13,5 +13,5 @@
 `kubectl create configmap tz-config --from-file=/usr/share/zoneinfo/Europe/Berlin`
 
 
-`kubectl port-forward svc/fault-injector-service -n fault-injection 8080:8080`
-`kubectl port-forward svc/fault-injector-service -n fault-injection 5005:5005`
+Port Forward Fault Injection Http Endpoints: `kubectl port-forward svc/fault-injector-service -n fault-injection 8080:8080`
+Port Forward JVM Debug Endpoint: `kubectl port-forward svc/fault-injector-service -n fault-injection 5005:5005`
