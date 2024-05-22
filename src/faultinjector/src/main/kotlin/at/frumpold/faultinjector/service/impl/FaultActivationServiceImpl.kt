@@ -19,7 +19,7 @@ internal class FaultActivationServiceImpl(
     }
 
     override fun getFaultActivationById(faultId: String): FaultDto =
-        FaultDto(faultId, faultStateService.isFaultActivated(faultId))
+        faultStateService.getFault(faultId)
 
     companion object {
         private val logger = KotlinLogging.logger {}

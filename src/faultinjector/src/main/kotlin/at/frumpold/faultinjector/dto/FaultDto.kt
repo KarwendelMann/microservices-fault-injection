@@ -1,6 +1,6 @@
 package at.frumpold.faultinjector.dto
 
-data class FaultDto(
-    val faultId: String,
-    val isActivated: Boolean,
+open class FaultDto(
+    open val faultId: String,
+    open var isActivated: Boolean,
 )

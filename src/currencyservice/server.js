@@ -15,6 +15,7 @@
  */
 
 const pino = require('pino');
+const axios = require('axios');
 const logger = pino({
   name: 'currencyservice-server',
   messageKey: 'message',
@@ -129,36 +130,49 @@ function getSupportedCurrencies (call, callback) {
   });
 }
 
+async function checkForDelayFault() {
+    try {
+        const response = await axios.get('http://fault-injector-service.fault-injection.svc.cluster.local:8080/faults/delay-fault-1');
+        return response.data.isActivated === true ? response.data.delay : 0; // Ensure your fault activation system returns a delay value in milliseconds.
+    } catch (error) {
+        console.error('Error fetching delay fault:', error);
+        return 0; // Return 0 in case of an error to avoid delay.
+    }
+}
+
 /**
  * Converts between currencies
  */
-function convert (call, callback) {
+async function convert (call, callback) {
   try {
-    _getCurrencyData((data) => {
-      const request = call.request;
+      const delay = await checkForDelayFault();
+      setTimeout(async () => {
+      _getCurrencyData((data) => {
+          const request = call.request;
 
-      // Convert: from_currency --> EUR
-      const from = request.from;
-      const euros = _carry({
-        units: from.units / data[from.currency_code],
-        nanos: from.nanos / data[from.currency_code]
+          // Convert: from_currency --> EUR
+          const from = request.from;
+          const euros = _carry({
+              units: from.units / data[from.currency_code],
+              nanos: from.nanos / data[from.currency_code]
+          });
+
+          euros.nanos = Math.round(euros.nanos);
+
+          // Convert: EUR --> to_currency
+          const result = _carry({
+              units: euros.units * data[request.to_code],
+              nanos: euros.nanos * data[request.to_code]
+          });
+
+          result.units = Math.floor(result.units);
+          result.nanos = Math.floor(result.nanos);
+          result.currency_code = request.to_code;
+
+          logger.info(`conversion request successful`);
+          callback(null, result);
       });
-
-      euros.nanos = Math.round(euros.nanos);
-
-      // Convert: EUR --> to_currency
-      const result = _carry({
-        units: euros.units * data[request.to_code],
-        nanos: euros.nanos * data[request.to_code]
-      });
-
-      result.units = Math.floor(result.units);
-      result.nanos = Math.floor(result.nanos);
-      result.currency_code = request.to_code;
-
-      logger.info(`conversion request successful`);
-      callback(null, result);
-    });
+  }, delay);
   } catch (err) {
     logger.error(`conversion request failed: ${err}`);
     callback(err.message);
