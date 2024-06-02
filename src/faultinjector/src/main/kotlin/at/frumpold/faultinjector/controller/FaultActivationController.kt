@@ -9,11 +9,8 @@ import org.springframework.web.bind.annotation.*
 internal class FaultActivationController(
     private val faultActivationService: FaultActivationService
 ) {
-    @PostMapping("/activate/{faultId}")
-    fun activateFault(@PathVariable faultId: String) = faultActivationService.activateFault(faultId)
-
-    @PostMapping("/deactivate/{faultId}")
-    fun deactivateFault(@PathVariable faultId: String) = faultActivationService.deactivateFault(faultId)
+    @PostMapping("/configure")
+    fun configure(@RequestBody fault: FaultDto) = faultActivationService.configureFault(fault)
 
     @GetMapping("/{faultId}")
     fun getFaultById(@PathVariable faultId: String): FaultDto = faultActivationService.getFaultActivationById(faultId)

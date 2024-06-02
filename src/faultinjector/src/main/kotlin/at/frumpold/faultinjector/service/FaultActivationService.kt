@@ -4,9 +4,7 @@ import at.frumpold.faultinjector.dto.FaultDto
 
 interface FaultActivationService {
 
-    fun activateFault(faultId: String)
-
-    fun deactivateFault(faultId: String)
+    fun configureFault(fault: FaultDto)
 
     fun getFaultActivationById(faultId: String): FaultDto
 }

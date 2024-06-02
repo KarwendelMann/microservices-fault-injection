@@ -133,10 +133,10 @@ function getSupportedCurrencies (call, callback) {
 async function checkForDelayFault() {
     try {
         const response = await axios.get('http://fault-injector-service.fault-injection.svc.cluster.local:8080/faults/delay-fault-1');
-        return response.data.isActivated === true ? response.data.delay : 0; // Ensure your fault activation system returns a delay value in milliseconds.
+        return response.data.isActivated === true ? response.data.delay : 0;
     } catch (error) {
         console.error('Error fetching delay fault:', error);
-        return 0; // Return 0 in case of an error to avoid delay.
+        return 0;
     }
 }
 

@@ -89,17 +89,11 @@ def init_locust():
 @app.route('/control', methods=['POST'])
 def control_locust():
     data = request.json
-    command = data.get('command')
-    if command == 'stop':
-        env.runner.stop()
-        return "Test stopped", 200
-    elif command == 'start':
-        user_count = data.get('user_count', 1)
-        spawn_rate = data.get('spawn_rate', 10)
-        env.runner.start(user_count=user_count, spawn_rate=spawn_rate)
-        return f"Changed to {user_count} users at spawn rate of {spawn_rate}", 200
-    return "Invalid command", 400
+    user_count = data.get('userCount', 1)
+    spawn_rate = data.get('userSpawnRate', 10)
+    env.runner.start(user_count=user_count, spawn_rate=spawn_rate)
+    return f"Changed to {user_count} users at spawn rate of {spawn_rate}", 200
 
 if __name__ == "__main__":
     init_locust()
-    threading.Thread(target=app.run(port=8089, use_reloader=False)).start()
+    threading.Thread(target=app.run(host="0.0.0.0", port=8089, use_reloader=False)).start()
