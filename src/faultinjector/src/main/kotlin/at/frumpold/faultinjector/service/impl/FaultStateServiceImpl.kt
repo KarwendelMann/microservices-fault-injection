@@ -4,8 +4,13 @@ import at.frumpold.faultinjector.dto.FaultDto
 import at.frumpold.faultinjector.service.FaultStateService
 import org.springframework.stereotype.Service
 
-const val DELAY_FAULT_1 = "delay-fault-1"
-const val OVERLOAD_FAULT_1 = "overload-fault-1"
+const val DELAY_FAULT_1 = "delayFault1"
+const val OVERLOAD_FAULT_1 = "overloadFault1"
+const val INTERNAL_FAULT_1 = "internalFault1"
+const val DEPENDENCY_FAULT_1 = "dependencyFault1"
+const val CONFIGURATION_FAULT_1 = "configurationFault1"
+const val DELAY_FAULT_2 = "delayFault2"
+
 
 @Service
 internal class FaultStateServiceImpl : FaultStateService {
@@ -13,16 +18,30 @@ internal class FaultStateServiceImpl : FaultStateService {
     private val faults = mutableMapOf<String, FaultDto>(
         DELAY_FAULT_1 to FaultDto(
             faultId = DELAY_FAULT_1,
-            isActivated = false,
             activationEndpoint = null,
             delay = 1000
         ),
         OVERLOAD_FAULT_1 to FaultDto(
             faultId = OVERLOAD_FAULT_1,
-            isActivated = false,
             activationEndpoint = "http://loadgenerator.default.svc.cluster.local:8089/control",
             userCount = 10,
             userSpawnRate = 10
+        ),
+        INTERNAL_FAULT_1 to FaultDto(
+            faultId = INTERNAL_FAULT_1,
+        ),
+        DEPENDENCY_FAULT_1 to FaultDto(
+            faultId = DEPENDENCY_FAULT_1
+        ),
+        CONFIGURATION_FAULT_1 to FaultDto(
+            faultId = CONFIGURATION_FAULT_1,
+            targetDeployment = "redis-cart",
+            pathToHealthyConfig = "redis.yaml",
+            pathToFaultyConfig = "redis-faulty.yaml"
+        ),
+        DELAY_FAULT_2 to FaultDto(
+            faultId = DELAY_FAULT_2,
+            delay = 60,
         )
     )
 

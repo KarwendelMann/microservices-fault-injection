@@ -38,10 +38,10 @@ class HipsterShopServer {
    * @param {*} call  { ChargeRequest }
    * @param {*} callback  fn(err, ChargeResponse)
    */
-  static ChargeServiceHandler(call, callback) {
+  static async ChargeServiceHandler(call, callback) {
     try {
       logger.info(`PaymentService#Charge invoked with request ${JSON.stringify(call.request)}`);
-      const response = charge(call.request);
+      const response = await charge(call.request);
       callback(null, response);
     } catch (err) {
       console.warn(err);
@@ -55,7 +55,7 @@ class HipsterShopServer {
 
 
   listen() {
-    const server = this.server 
+    const server = this.server
     const port = this.port
     server.bindAsync(
       `[::]:${port}`,

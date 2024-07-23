@@ -13,43 +13,44 @@
 // limitations under the License.
 
 const cardValidator = require('simple-card-validator');
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4} = require('uuid');
 const pino = require('pino');
+const axios = require('axios');
 
 const logger = pino({
-  name: 'paymentservice-charge',
-  messageKey: 'message',
-  formatters: {
-    level (logLevelString, logLevelNum) {
-      return { severity: logLevelString }
+    name: 'paymentservice-charge',
+    messageKey: 'message',
+    formatters: {
+        level(logLevelString, logLevelNum) {
+            return {severity: logLevelString}
+        }
     }
-  }
 });
 
 
 class CreditCardError extends Error {
-  constructor (message) {
-    super(message);
-    this.code = 400; // Invalid argument error
-  }
+    constructor(message) {
+        super(message);
+        this.code = 400; // Invalid argument error
+    }
 }
 
 class InvalidCreditCard extends CreditCardError {
-  constructor (cardType) {
-    super(`Credit card info is invalid`);
-  }
+    constructor(cardType) {
+        super(`Credit card info is invalid`);
+    }
 }
 
 class UnacceptedCreditCard extends CreditCardError {
-  constructor (cardType) {
-    super(`Sorry, we cannot process ${cardType} credit cards. Only VISA or MasterCard is accepted.`);
-  }
+    constructor(cardType) {
+        super(`Sorry, we cannot process ${cardType} credit cards. Only VISA or MasterCard is accepted.`);
+    }
 }
 
 class ExpiredCreditCard extends CreditCardError {
-  constructor (number, month, year) {
-    super(`Your credit card (ending ${number.substr(-4)}) expired on ${month}/${year}`);
-  }
+    constructor(number, month, year) {
+        super(`Your credit card (ending ${number.substr(-4)}) expired on ${month}/${year}`);
+    }
 }
 
 /**
@@ -58,29 +59,49 @@ class ExpiredCreditCard extends CreditCardError {
  * @param {*} request
  * @return transaction_id - a random uuid.
  */
-module.exports = function charge (request) {
-  const { amount, credit_card: creditCard } = request;
-  const cardNumber = creditCard.credit_card_number;
-  const cardInfo = cardValidator(cardNumber);
-  const {
-    card_type: cardType,
-    valid
-  } = cardInfo.getCardDetails();
+module.exports = async function charge(request) {
+    if(await checkForDependencyFault()) {
+        throw new InvalidCreditCard();
+    }
 
-  if (!valid) { throw new InvalidCreditCard(); }
+    const {amount, credit_card: creditCard} = request;
+    const cardNumber = creditCard.credit_card_number;
+    const cardInfo = cardValidator(cardNumber);
+    const {
+        card_type: cardType,
+        valid
+    } = cardInfo.getCardDetails();
 
-  // Only VISA and mastercard is accepted, other card types (AMEX, dinersclub) will
-  // throw UnacceptedCreditCard error.
-  if (!(cardType === 'visa' || cardType === 'mastercard')) { throw new UnacceptedCreditCard(cardType); }
+    if (!valid) {
+        throw new InvalidCreditCard();
+    }
 
-  // Also validate expiration is > today.
-  const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
-  const { credit_card_expiration_year: year, credit_card_expiration_month: month } = creditCard;
-  if ((currentYear * 12 + currentMonth) > (year * 12 + month)) { throw new ExpiredCreditCard(cardNumber.replace('-', ''), month, year); }
+    // Only VISA and mastercard is accepted, other card types (AMEX, dinersclub) will
+    // throw UnacceptedCreditCard error.
+    if (!(cardType === 'visa' || cardType === 'mastercard')) {
+        throw new UnacceptedCreditCard(cardType);
+    }
 
-  logger.info(`Transaction processed: ${cardType} ending ${cardNumber.substr(-4)} \
+    // Also validate expiration is > today.
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+    const {credit_card_expiration_year: year, credit_card_expiration_month: month} = creditCard;
+    if ((currentYear * 12 + currentMonth) > (year * 12 + month)) {
+        throw new ExpiredCreditCard(cardNumber.replace('-', ''), month, year);
+    }
+
+    logger.info(`Transaction processed: ${cardType} ending ${cardNumber.substr(-4)} \
     Amount: ${amount.currency_code}${amount.units}.${amount.nanos}`);
 
-  return { transaction_id: uuidv4() };
+    return {transaction_id: uuidv4()};
 };
+
+async function checkForDependencyFault() {
+    try {
+        const response = await axios.get('http://fault-injector-service.fault-injection.svc.cluster.local:8080/faults/dependencyFault1');
+        return response.data.isActivated === true;
+    } catch (error) {
+        console.error('Error fetching delay fault:', error);
+        return false;
+    }
+}

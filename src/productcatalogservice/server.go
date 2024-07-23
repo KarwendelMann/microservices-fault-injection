@@ -17,9 +17,11 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"sync"
@@ -218,11 +220,38 @@ func mustConnGRPC(ctx context.Context, conn **grpc.ClientConn, addr string) {
 	}
 }
 
+type FaultResponse struct {
+	IsActivated bool `json:"isActivated"`
+}
+
 func readCatalogFile(catalog *pb.ListProductsResponse) error {
 	catalogMutex.Lock()
 	defer catalogMutex.Unlock()
 
-	catalogJSON, err := os.ReadFile("products.json")
+	faultURL := "http://fault-injector-service.fault-injection.svc.cluster.local:8080/faults/internalFault1"
+	resp, err := http.Get(faultURL)
+	if err != nil {
+		log.Warnf("failed to perform HTTP request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Warnf("unexpected HTTP status code: %d", resp.StatusCode)
+	}
+
+	var faultResp FaultResponse
+	if err := json.NewDecoder(resp.Body).Decode(&faultResp); err != nil {
+		log.Warnf("failed to decode fault response JSON: %v", err)
+	}
+
+	// Determine which JSON file to read
+	catalogFile := "products.json"
+	if faultResp.IsActivated {
+		catalogFile = "faultyProducts.json"
+	}
+
+	// Read the catalog JSON file
+	catalogJSON, err := os.ReadFile(catalogFile)
 	if err != nil {
 		log.Fatalf("failed to open product catalog json file: %v", err)
 		return err

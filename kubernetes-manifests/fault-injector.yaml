@@ -13,6 +13,7 @@ spec:
       labels:
         app: fault-injector-service
     spec:
+      serviceAccountName: fault-injector-sa
       containers:
         - name: fault-injector
           image: faultinjector
@@ -21,6 +22,9 @@ spec:
               name: server
             - containerPort: 5005
               name: debug
+          env:
+            - name: TZ
+              value: "Europe/Berlin"
 
 ---
 
@@ -40,3 +44,67 @@ spec:
       name: debug
   selector:
     app: fault-injector-service
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fault-injector-sa
+  namespace: fault-injection
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: fault-injection
+  name: fault-injector-role
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "update"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: fault-injector-rolebinding
+  namespace: fault-injection
+subjects:
+  - kind: ServiceAccount
+    name: fault-injector-sa
+    namespace: fault-injection
+roleRef:
+  kind: Role
+  name: fault-injector-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: fault-injector-role-default
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "update"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: fault-injector-rolebinding-default
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: fault-injector-sa
+    namespace: fault-injection
+roleRef:
+  kind: Role
+  name: fault-injector-role-default
+  apiGroup: rbac.authorization.k8s.io

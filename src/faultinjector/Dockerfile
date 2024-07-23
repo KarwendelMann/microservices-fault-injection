@@ -15,5 +15,4 @@ WORKDIR /app
 RUN mkdir jars
 COPY --from=builder /app/build/libs/*.jar jars/
 
-# Set the entry point to run the JAR
 ENTRYPOINT ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "/app/jars/fault-injector-0.0.1-SNAPSHOT.jar"]

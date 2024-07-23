@@ -36,13 +36,11 @@ resources:
   - filebeat-serviceaccount.yaml
   - filebeat-clusterrole.yaml
   - filebeat-clusterrolebinding.yaml
-  - metricbeat-clusterrole.yaml
-  - metricbeat-configmap.yaml
-  - metricbeat-daemonset.yaml
-  - metricbeat-serviceaccount.yaml
-  - metricbeat-clusterrolebinding.yaml
   - jaeger.yaml
+  - cAdvisor.yaml
+  - metricbeat.yaml
   - fault-injector.yaml
+#  - debug.yaml
 # components:
 # - ../kustomize/components/cymbal-branding
 # - ../kustomize/components/google-cloud-operations

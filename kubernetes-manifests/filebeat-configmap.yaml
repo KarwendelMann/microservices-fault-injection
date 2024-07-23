@@ -12,11 +12,16 @@ data:
         - type: kubernetes
           node: ${NODE_NAME}
           templates:
-            - condition.and:
-                - equals:
-                    kubernetes.namespace: "default"
-                - not.equals:
-                    kubernetes.container.name: "istio-proxy"
+            - condition:
+                and:
+                  - or:
+                      - equals:
+                          kubernetes.namespace: "default"
+                      - equals:
+                          kubernetes.namespace: "fault-injection"
+                  - not:
+                      equals:
+                        kubernetes.container.name: "istio-proxy"
               config:
                 - type: container
                   paths:

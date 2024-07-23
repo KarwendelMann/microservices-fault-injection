@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug
+  namespace: logging
+spec:
+  serviceAccountName: metricbeat
+  containers:
+    - name: debug
+      image: praqma/network-multitool
+      command: ["sleep", "3600"]

@@ -1,8 +1,8 @@
 package at.frumpold.faultinjector.dto
 
-open class FaultDto(
+data class FaultDto(
     val faultId: String,
-    var isActivated: Boolean,
+    var isActivated: Boolean = false,
     val activationEndpoint: String? = null,
 
     // Fault Type Specific fields
@@ -13,4 +13,9 @@ open class FaultDto(
     // Overload Faults
     var userCount: Int? = null,
     var userSpawnRate: Int? = null,
+
+    // Configuration Faults
+    var targetDeployment: String? = null,
+    var pathToHealthyConfig: String? = null,
+    var pathToFaultyConfig: String? = null,
 )

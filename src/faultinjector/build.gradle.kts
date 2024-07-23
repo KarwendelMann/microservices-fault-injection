@@ -27,6 +27,8 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("io.kubernetes:client-java:21.0.0")
+    implementation("io.kubernetes:client-java-api:21.0.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

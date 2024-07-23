@@ -21,3 +21,172 @@ spec:
           env:
             - name: ELASTICSEARCH_HOSTS
               value: "http://elasticsearch.logging.svc.cluster.local:9200"
+          volumeMounts:
+            - name: saved-objects
+              mountPath: /usr/share/kibana/config/saved_objects.ndjson
+              subPath: saved_objects.ndjson
+      volumes:
+      - name: saved-objects
+        configMap:
+          name: kibana-saved-objects
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-saved-objects
+  namespace: logging
+data:
+  saved_objects.ndjson: |
+    {
+      "attributes": {
+        "chartOptions": {
+          "stack": false,
+          "type": "line",
+          "yAxisMode": "fromZero"},
+        "currentTimerange": {
+          "from": "now-1h",
+          "interval": ">=10s",
+          "to": "now"},
+        "name": "Filesystem",
+        "options": {
+          "aggregation": "avg",
+          "groupBy": [
+            "prometheus.labels.container_label_io_kubernetes_pod_name"],
+          "metrics": [
+            {
+              "aggregation": "avg",
+              "color": "color0",
+              "field": "prometheus.metrics.container_fs_usage_bytes"}],
+          "source": "default"}},
+      "coreMigrationVersion": "8.8.0",
+      "created_at": "2024-07-20T15:45:57.407Z",
+      "id": "cb961746-e5a9-4ea3-8a97-a1abefb5a6a2",
+      "managed": false,
+      "references": [],
+      "type": "metrics-explorer-view",
+      "updated_at": "2024-07-20T15:45:57.407Z",
+      "version": "WzI0MywxXQ=="
+    }
+    {
+      "attributes": {
+        "chartOptions": {
+          "stack": false,
+          "type": "line",
+          "yAxisMode": "fromZero"},
+        "currentTimerange": {
+          "from": "now-1h",
+          "interval": ">=10s",
+          "to": "now"},
+        "name": "Network",
+        "options": {
+          "aggregation": "rate",
+          "groupBy": [
+            "prometheus.labels.container_label_io_kubernetes_pod_name"],
+          "metrics": [
+            {
+              "aggregation": "rate",
+              "color": "color0",
+              "field": "prometheus.metrics.container_network_receive_bytes_total"},
+            {
+              "aggregation": "rate",
+              "color": "color1",
+              "field": "prometheus.metrics.container_network_transmit_bytes_total"},
+            {
+              "aggregation": "rate",
+              "color": "color2",
+              "field": "prometheus.metrics.container_network_receive_errors_total"},
+            {
+              "aggregation": "rate",
+              "color": "color3",
+              "field": "prometheus.metrics.container_network_transmit_errors_total"},
+            {
+              "aggregation": "rate",
+              "color": "color4",
+              "field": "prometheus.metrics.container_network_receive_packets_dropped_total"},
+            {
+              "aggregation": "rate",
+              "color": "color5",
+              "field": "prometheus.metrics.container_network_transmit_packets_dropped_total"}],
+          "source": "default"}},
+      "coreMigrationVersion": "8.8.0",
+      "created_at": "2024-07-20T15:45:22.381Z",
+      "id": "f75fd81b-598c-4c74-b7c1-74e0141e952e",
+      "managed": false,
+      "references": [],
+      "type": "metrics-explorer-view",
+      "updated_at": "2024-07-20T15:45:22.381Z",
+      "version": "WzI0MiwxXQ=="}
+    {
+      "attributes": {
+        "chartOptions": {
+          "stack": false,
+          "type": "line",
+          "yAxisMode": "fromZero"},
+        "currentTimerange": {
+          "from": "now-1h",
+          "interval": ">=10s",
+          "to": "now"},
+        "name": "Memory",
+        "options": {
+          "aggregation": "avg",
+          "groupBy": [
+            "prometheus.labels.container_label_io_kubernetes_pod_name"],
+          "metrics": [
+            {
+              "aggregation": "avg",
+              "color": "color0",
+              "field": "prometheus.metrics.container_memory_usage_bytes"},
+            {
+              "aggregation": "avg",
+              "color": "color1",
+              "field": "prometheus.metrics.container_oom_events_total"}],
+          "source": "default"
+        }},
+      "coreMigrationVersion": "8.8.0",
+      "created_at": "2024-07-20T15:43:45.640Z",
+      "id": "1542ae07-b80b-43bd-b8cc-e8962a726e98",
+      "managed": false,
+      "references": [],
+      "type": "metrics-explorer-view",
+      "updated_at": "2024-07-20T15:43:45.640Z",
+      "version": "WzIyNCwxXQ=="}
+    {
+      "attributes": {
+        "chartOptions": {
+          "stack": false,
+          "type": "line",
+          "yAxisMode": "fromZero"
+        },
+        "currentTimerange": {
+          "from": "now-1h",
+          "interval": ">=10s",
+          "to": "now"},
+        "name": "CPU",
+        "options": {
+          "aggregation": "rate",
+          "groupBy": [
+            "prometheus.labels.container_label_io_kubernetes_pod_name"
+          ],
+          "metrics": [
+            {
+              "aggregation": "rate",
+              "color": "color0",
+              "field": "prometheus.metrics.container_cpu_usage_seconds_total"
+            }
+          ],
+          "source": "default"}
+      },
+      "coreMigrationVersion": "8.8.0",
+      "created_at": "2024-07-20T15:37:23.964Z",
+      "id": "2c1bfabb-ac7b-4ee1-a363-7b4f05fb8615",
+      "managed": false,
+      "references": [],
+      "type": "metrics-explorer-view",
+      "updated_at": "2024-07-20T15:37:23.964Z",
+      "version": "WzEzNSwxXQ=="}
+    {
+      "excludedObjects": [],
+      "excludedObjectsCount": 0,
+      "exportedCount": 4,
+      "missingRefCount": 0,
+      "missingReferences": []}
