@@ -1,12 +1,12 @@
-# Development Guide 
+# Development Guide
 
-This doc explains how to build and run the Online Boutique source code locally using the `skaffold` command-line tool.  
+This doc explains how to build and run the Online Boutique source code locally using the `skaffold` command-line tool.
 
 ## Prerequisites
 
 - [Docker for Desktop](https://www.docker.com/products/docker-desktop)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/) (can be installed via `gcloud components install kubectl` for Option 1 - GKE)
-- [skaffold **2.0.2+**](https://skaffold.dev/docs/install/) (latest version recommended), a tool that builds and deploys Docker images in bulk. 
+- [skaffold **2.0.2+**](https://skaffold.dev/docs/install/) (latest version recommended), a tool that builds and deploys Docker images in bulk.
 - Clone the repository.
     ```sh
     git clone https://github.com/GoogleCloudPlatform/microservices-demo
@@ -19,7 +19,7 @@ This doc explains how to build and run the Online Boutique source code locally u
 ## Option 1: Google Kubernetes Engine (GKE)
 
 > 💡 Recommended if you're using Google Cloud and want to try it on
-> a realistic cluster. **Note**: If your cluster has Workload Identity enabled, 
+> a realistic cluster. **Note**: If your cluster has Workload Identity enabled,
 > [see these instructions](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#enable)
 
 1.  Create a Google Kubernetes Engine cluster and make sure `kubectl` is pointing
@@ -72,7 +72,7 @@ This doc explains how to build and run the Online Boutique source code locally u
 
 5.  Navigate to `http://EXTERNAL-IP` to access the web frontend.
 
-## Option 2 - Local Cluster 
+## Option 2 - Local Cluster
 
 1. Launch a local Kubernetes cluster with one of the following tools:
 
@@ -105,7 +105,7 @@ This doc explains how to build and run the Online Boutique source code locally u
 
 4. Run `kubectl get pods` to verify the Pods are ready and running.
 
-5. Run `kubectl port-forward deployment/frontend 8080:8080` to forward a port to the frontend service.
+5. Run `kubectl port-forward deployment/frontend 8090:8080` to forward a port to the frontend service.
 
 6. Navigate to `localhost:8080` to access the web frontend.
 

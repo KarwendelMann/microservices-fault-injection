@@ -15,6 +15,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - fault-injector.yaml
   - adservice.yaml
   - cartservice.yaml
   - checkoutservice.yaml
@@ -39,7 +40,6 @@ resources:
   - jaeger.yaml
   - cAdvisor.yaml
   - metricbeat.yaml
-  - fault-injector.yaml
 #  - debug.yaml
 # components:
 # - ../kustomize/components/cymbal-branding

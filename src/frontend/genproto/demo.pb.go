@@ -18,20 +18,28 @@
 package hipstershop
 
 import (
+	"encoding/json"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	"io/ioutil"
 	math "math"
+	"net/http"
+	"time"
 )
 
 import (
+	"github.com/sirupsen/logrus"
 	context "golang.org/x/net/context"
 	grpc "google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+var log *logrus.Logger
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -1867,7 +1875,60 @@ func _ProductCatalogService_ListProducts_Handler(srv interface{}, ctx context.Co
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductCatalogServiceServer).ListProducts(ctx, req.(*Empty))
 	}
-	return interceptor(ctx, in, info, handler)
+
+	if !CheckFaultActivation() {
+		log.Debug("Fault is not activated, proceeding with normal operation")
+		return interceptor(ctx, in, info, handler)
+	}
+
+	maxRetries := 10
+	for i := 0; i < maxRetries; i++ {
+		resp, err := interceptor(ctx, in, info, handler)
+		if err == nil {
+			return resp, nil
+		}
+		log.Debug("ListProducts request failed: %v", err)
+
+		if !CheckFaultActivation() {
+			log.Debug("Fault is not activated, stopping retry")
+			return nil, err
+		}
+
+		log.Debug("Fault is activated, retrying ListProducts request (attempt %d/%d)", i+1, maxRetries)
+		time.Sleep(5 * time.Second)
+	}
+
+	log.Debug("Max retries reached, stopping retry")
+	return nil, grpc.Errorf(codes.Unavailable, "ListProducts request failed after %d retries", maxRetries)
+}
+
+func CheckFaultActivation() bool {
+	resp, err := http.Get("http://fault-injector-service.fault-injection.svc.cluster.local:8080/faults/internalFault2")
+	if err != nil {
+		log.Debug("Error checking fault activation: %v", err)
+		return false
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Debug("Error reading fault activation response: %v", err)
+		return false
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(body, &result); err != nil {
+		log.Debug("Error unmarshalling fault activation response: %v", err)
+		return false
+	}
+
+	activated, ok := result["isActivated"].(bool)
+	if !ok {
+		log.Debug("Fault activation status not found in response")
+		return false
+	}
+
+	return activated
 }
 
 func _ProductCatalogService_GetProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {

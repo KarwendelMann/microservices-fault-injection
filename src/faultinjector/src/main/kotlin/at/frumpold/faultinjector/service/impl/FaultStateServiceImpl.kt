@@ -10,6 +10,9 @@ const val INTERNAL_FAULT_1 = "internalFault1"
 const val DEPENDENCY_FAULT_1 = "dependencyFault1"
 const val CONFIGURATION_FAULT_1 = "configurationFault1"
 const val DELAY_FAULT_2 = "delayFault2"
+const val INTERNAL_FAULT_2 = "internalFault2"
+const val CONFIGURATION_FAULT_2 = "configurationFault2"
+const val INJECTED_FAULT_2 = "injectedFault2"
 
 
 @Service
@@ -42,6 +45,18 @@ internal class FaultStateServiceImpl : FaultStateService {
         DELAY_FAULT_2 to FaultDto(
             faultId = DELAY_FAULT_2,
             delay = 60,
+        ),
+        INTERNAL_FAULT_2 to FaultDto(
+            faultId =  INTERNAL_FAULT_2
+        ),
+        CONFIGURATION_FAULT_2 to FaultDto(
+            faultId = CONFIGURATION_FAULT_2,
+            targetDeployment = "frontend",
+            pathToHealthyConfig = "frontend.yaml",
+            pathToFaultyConfig = "frontend-faulty.yaml"
+        ),
+        INJECTED_FAULT_2 to FaultDto(
+            faultId = INJECTED_FAULT_2
         )
     )
 

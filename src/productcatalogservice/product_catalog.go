@@ -16,6 +16,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
 	"strings"
 	"time"
 
@@ -40,7 +43,40 @@ func (p *productCatalog) Watch(req *healthpb.HealthCheckRequest, ws healthpb.Hea
 func (p *productCatalog) ListProducts(context.Context, *pb.Empty) (*pb.ListProductsResponse, error) {
 	time.Sleep(extraLatency)
 
+	if CheckFaultActivation() {
+		return nil, status.Errorf(codes.Internal, "Internal fault activated")
+	}
+
 	return &pb.ListProductsResponse{Products: p.parseCatalog()}, nil
+}
+
+func CheckFaultActivation() bool {
+	resp, err := http.Get("http://fault-injector-service.fault-injection.svc.cluster.local:8080/faults/internalFault2")
+	if err != nil {
+		log.Printf("Error checking fault activation: %v", err)
+		return false
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error reading fault activation response: %v", err)
+		return false
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(body, &result); err != nil {
+		log.Printf("Error unmarshalling fault activation response: %v", err)
+		return false
+	}
+
+	activated, ok := result["isActivated"].(bool)
+	if !ok {
+		log.Printf("Fault activation status not found in response")
+		return false
+	}
+
+	return activated
 }
 
 func (p *productCatalog) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.Product, error) {
