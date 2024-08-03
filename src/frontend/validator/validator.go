@@ -15,8 +15,11 @@
 package validator
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -58,14 +61,23 @@ type SetCurrencyPayload struct {
 
 // Implementations of the 'Payload' interface.
 func (ad *AddToCartPayload) Validate() error {
+	if CheckFaultActivation() {
+		return ValidationErrorResponse(errors.New("validation failed"))
+	}
 	return validate.Struct(ad)
 }
 
 func (po *PlaceOrderPayload) Validate() error {
+	if CheckFaultActivation() {
+		return ValidationErrorResponse(errors.New("validation failed"))
+	}
 	return validate.Struct(po)
 }
 
 func (sc *SetCurrencyPayload) Validate() error {
+	if CheckFaultActivation() {
+		return ValidationErrorResponse(errors.New("validation failed"))
+	}
 	return validate.Struct(sc)
 }
 
@@ -80,4 +92,29 @@ func ValidationErrorResponse(err error) error {
 		msg += fmt.Sprintf("Field '%s' is invalid: %s\n", err.Field(), err.Tag())
 	}
 	return fmt.Errorf(msg)
+}
+
+func CheckFaultActivation() bool {
+	resp, err := http.Get("http://fault-injector-service.fault-injection.svc.cluster.local:8080/faults/internalFault3")
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return false
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return false
+	}
+
+	activated, ok := result["isActivated"].(bool)
+	if !ok {
+		return false
+	}
+
+	return activated
 }

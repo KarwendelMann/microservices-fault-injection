@@ -13,6 +13,8 @@ const val DELAY_FAULT_2 = "delayFault2"
 const val INTERNAL_FAULT_2 = "internalFault2"
 const val CONFIGURATION_FAULT_2 = "configurationFault2"
 const val INJECTED_FAULT_2 = "injectedFault2"
+const val INTERNAL_FAULT_3 = "internalFault3"
+const val INTERNAL_FAULT_4 = "internalFault4"
 
 
 @Service
@@ -57,7 +59,13 @@ internal class FaultStateServiceImpl : FaultStateService {
         ),
         INJECTED_FAULT_2 to FaultDto(
             faultId = INJECTED_FAULT_2
-        )
+        ),
+        INTERNAL_FAULT_3 to FaultDto(
+            faultId =  INTERNAL_FAULT_3
+        ),
+        INTERNAL_FAULT_4 to FaultDto(
+            faultId =  INTERNAL_FAULT_4
+        ),
     )
 
     override fun configureFault(fault: FaultDto): FaultDto {
