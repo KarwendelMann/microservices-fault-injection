@@ -22,6 +22,10 @@ internal class FaultActivationServiceImpl(
             sendFaultConfigurationRequest(it)
 
             kubernetesFaultService.changeKubernetesConfiguration(it)
+
+            if (it.restartDeploymentName != null) {
+                kubernetesFaultService.restartDeployment(it.restartDeploymentName!!)
+            }
         }
     }
 

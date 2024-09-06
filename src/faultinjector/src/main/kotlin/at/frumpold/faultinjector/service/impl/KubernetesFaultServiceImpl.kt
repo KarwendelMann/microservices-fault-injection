@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import java.time.Instant
 import java.util.stream.Collectors
 
 @Service
@@ -40,6 +41,21 @@ internal class KubernetesFaultServiceImpl(
                 deployment
             ).execute()
         }
+    }
+
+    override fun restartDeployment(deploymentName: String) {
+        val deployment: V1Deployment = kubernetesAppsApi
+            .readNamespacedDeployment(deploymentName, "default")
+            .execute()
+
+        val annotations = deployment.spec?.template?.metadata?.annotations ?: mutableMapOf()
+        annotations["kubectl.kubernetes.io/restartedAt"] = Instant.now().toString()
+
+        deployment.spec?.template?.metadata?.annotations = annotations
+
+        kubernetesAppsApi
+            .replaceNamespacedDeployment(deploymentName, "default", deployment)
+            .execute()
     }
 
     private fun readResource(fileName: String): String {

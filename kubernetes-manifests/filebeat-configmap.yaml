@@ -30,5 +30,10 @@ data:
     processors:
       - add_kubernetes_metadata:
           in_cluster: true
+      - timestamp:
+          field: "@timestamp"
+          timezone: "Europe/Berlin"
+          layouts:
+            - "2006-01-02T15:04:05.999Z07:00"
     output.elasticsearch:
       hosts: [ "elasticsearch.logging:9200" ]

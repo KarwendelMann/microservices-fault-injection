@@ -34,6 +34,7 @@ internal class FaultStateServiceImpl : FaultStateService {
         ),
         INTERNAL_FAULT_1 to FaultDto(
             faultId = INTERNAL_FAULT_1,
+            restartDeploymentName = "productcatalogservice"
         ),
         DEPENDENCY_FAULT_1 to FaultDto(
             faultId = DEPENDENCY_FAULT_1

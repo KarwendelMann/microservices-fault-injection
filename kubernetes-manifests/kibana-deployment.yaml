@@ -21,6 +21,8 @@ spec:
           env:
             - name: ELASTICSEARCH_HOSTS
               value: "http://elasticsearch.logging.svc.cluster.local:9200"
+            - name: TZ
+              value: "Europe/Berlin"
           volumeMounts:
             - name: saved-objects
               mountPath: /usr/share/kibana/config/saved_objects.ndjson

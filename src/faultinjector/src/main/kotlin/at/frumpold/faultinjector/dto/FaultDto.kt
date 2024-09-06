@@ -7,6 +7,9 @@ data class FaultDto(
 
     // Fault Type Specific fields
 
+    // internal Fault
+    var restartDeploymentName: String? = null,
+
     // Injected Faults -- Delay
     var delay: Int? = null,
 

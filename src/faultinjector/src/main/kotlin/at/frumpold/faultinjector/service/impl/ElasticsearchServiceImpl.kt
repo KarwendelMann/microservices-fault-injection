@@ -60,7 +60,7 @@ internal class ElasticsearchServiceImpl(
 
     private fun groupByPrometheusPod(results: List<Map<String, Any>>) = results.groupBy {
         (it["prometheus"] as? Map<*, *>)?.get("labels")?.let { labels ->
-            (labels as? Map<*, *>)?.get("pod") as? String ?: error("prometheus.labels.pod not found")
+            (labels as? Map<*, *>)?.get("container_label_io_kubernetes_pod_name") as? String ?: error("prometheus.labels.pod not found")
         } ?: error("prometheus.labels.pod not found")
     }
 

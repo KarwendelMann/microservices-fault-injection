@@ -27,13 +27,16 @@ spec:
               readOnly: true
             - name: var-run
               mountPath: /var/run
-              readOnly: true
+              readOnly: false
             - name: sys
               mountPath: /sys
               readOnly: true
             - name: docker
               mountPath: /var/lib/docker
               readOnly: true
+          env:
+            - name: TZ
+              value: "Europe/Berlin"
       volumes:
         - name: rootfs
           hostPath:

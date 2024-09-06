@@ -5,4 +5,6 @@ import at.frumpold.faultinjector.dto.FaultDto
 interface KubernetesFaultService {
 
     fun changeKubernetesConfiguration(faultDto: FaultDto)
+
+    fun restartDeployment(deploymentName: String)
 }

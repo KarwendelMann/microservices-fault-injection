@@ -18,3 +18,4 @@
 Port Forward Fault Injection Http Endpoints: `kubectl port-forward svc/fault-injector-service -n fault-injection 8080:8080`
 Port Forward JVM Debug Endpoint: `kubectl port-forward svc/fault-injector-service -n fault-injection 5005:5005`
 Run `kubectl port-forward deployment/frontend 8090:8080` to forward a port to the frontend service.
+Port forward the jaegerUI by running `kubectl port-forward svc/jaeger 16686:16686 -n istio-system`

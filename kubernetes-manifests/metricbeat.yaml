@@ -72,6 +72,8 @@ spec:
               value: "elasticsearch"
             - name: ELASTICSEARCH_PORT
               value: "9200"
+            - name: TZ
+              value: "Europe/Berlin"
           securityContext:
             runAsUser: 0
           volumeMounts:
@@ -113,3 +115,5 @@ data:
             not:
               equals:
                 prometheus.labels.container_label_io_kubernetes_pod_namespace: "default"
+      - add_locale:
+          format: offset
